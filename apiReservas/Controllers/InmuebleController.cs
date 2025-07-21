@@ -6,10 +6,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace apiReservas.Controllers
 {
-    [Authorize]                     
-
+    [ApiController]  
     [Route("api/[controller]")]
-
+    [Authorize]
     public class InmuebleController : ControllerBase
     {
         IInmuebleService _inmuebleService;
@@ -27,21 +26,21 @@ namespace apiReservas.Controllers
         [HttpPost]
         public IActionResult Post([FromBody] Inmueble inmueble)
         {
-            _inmuebleService.Save(inmueble);
+            _inmuebleService.SaveAsync(inmueble);
             return Ok();
         }
 
-        [HttpPut("{id}")]
+        [HttpPut("{id:guid}")]
         public IActionResult Put(Guid id, [FromBody] Inmueble inmueble)
         {
-            _inmuebleService.Update(id, inmueble);
+            _inmuebleService.UpdateAsync(id, inmueble);
             return Ok();
         }
 
-        [HttpDelete("{id}")]
+        [HttpDelete("{id:guid}")]
         public IActionResult Delete(Guid id)
         {
-            _inmuebleService.Delete(id);
+            _inmuebleService.DeleteAsync(id);
             return Ok();
         }   
     }

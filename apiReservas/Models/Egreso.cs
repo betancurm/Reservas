@@ -13,10 +13,10 @@ namespace apiReservas.Models
         public float Valor { get; set; }
         public Guid InmuebleId { get; set; }
         [JsonIgnore]
-        public virtual Inmueble Inmueble { get; set; }
+        public virtual Inmueble? Inmueble { get; set; }
         public DateTime FechaCreacion { get; set; }
         public DateTime FechaModificacion { get; set; }
-        public Guid ApplicationUserId { get; private set; }
+        public Guid ApplicationUserId { get; set; }
 
     }
     public enum Concepto

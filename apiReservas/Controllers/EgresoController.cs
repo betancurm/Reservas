@@ -1,10 +1,13 @@
 ﻿using apiReservas.Models;
 using apiReservas.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace apiReservas.Controllers
 {
+    [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class EgresoController: ControllerBase
     {
         IEgresoService _egresoService;
@@ -23,13 +26,13 @@ namespace apiReservas.Controllers
             _egresoService.Save(egreso);
             return Ok();
         }
-        [HttpPut("{id}")]
+        [HttpPut("{id:guid}")]
         public IActionResult Put(Guid id, [FromBody] Egreso egreso)
         {
             _egresoService.Update(id, egreso);
             return Ok();
         }
-        [HttpDelete("{id}")]
+        [HttpDelete("{id:guid}")]    
         public IActionResult Delete(Guid id)
         {
             _egresoService.Delete(id);

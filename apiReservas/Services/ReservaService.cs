@@ -11,9 +11,9 @@ namespace apiReservas.Services
 
         private ReservasContext _context;
 
-        public ReservaService(ICurrentUserService currentUserService, ReservasContext dbcontext)
+        public ReservaService(ICurrentUserService currentUser, ReservasContext dbcontext)
         {
-            _currentUserService = currentUserService;
+            _currentUserService = currentUser;
             _context = dbcontext;
         }
         public IEnumerable<Reserva> Get()
@@ -36,14 +36,19 @@ namespace apiReservas.Services
                 .ToList();
         }
 
-        public async Task Save(Reserva reserva)
+        public async Task SaveAsync(Reserva reserva)
         {
+            // 1. Usuario autenticado
+            if (_currentUserService.ApplicationUserId == Guid.Empty)
+                throw new UnauthorizedAccessException("Token sin uid");
+
             reserva.ReservaId = Guid.NewGuid();
+            reserva.ApplicationUserId = _currentUserService.ApplicationUserId; 
             reserva.FechaCreacion = DateTime.Now;
             reserva.FechaModificacion = DateTime.Now;
 
             DateTime fechaInicio = reserva.FechaInicio;
-
+            
             while (fechaInicio < reserva.FechaFin)
             {
                 DateTime inicioMesSiguiente = new DateTime(fechaInicio.Year, fechaInicio.Month, 1).AddMonths(1);
@@ -67,21 +72,20 @@ namespace apiReservas.Services
                 // Mover al siguiente mes
                 fechaInicio = inicioMesSiguiente;
             }
-
+            
             _context.Reservas.Add(reserva);
             await _context.SaveChangesAsync();
         }
 
 
-        public async Task Update(Guid id, Reserva reserva)
+        public async Task UpdateAsync(Guid id, Reserva reserva)
         {
             
             var reservaActual = _context.Reservas.Include(r => r.DetallesReserva)
             .FirstOrDefault(r => r.ReservaId == id);
             if (reservaActual != null)
             {
-
-
+                reservaActual.ApplicationUserId = _currentUserService.ApplicationUserId;
                 reservaActual.FechaInicio = reserva.FechaInicio;
                 reservaActual.FechaFin = reserva.FechaFin;
                 reservaActual.ValorReservaUSD = reserva.ValorReservaUSD;
@@ -121,7 +125,7 @@ namespace apiReservas.Services
         }
 
 
-        public async Task Delete(Guid id)
+        public async Task DeleteAsync(Guid id)
         {
             var reservaActual = _context.Reservas.Include(r => r.DetallesReserva)
                         .FirstOrDefault(r => r.ReservaId == id); 
@@ -139,9 +143,9 @@ namespace apiReservas.Services
         public interface IReservaService
         {
             IEnumerable<Reserva> Get();
-            Task Save(Reserva reserva);
-            Task Update(Guid id, Reserva reserva);
-            Task Delete(Guid id);
+            Task SaveAsync(Reserva reserva);
+            Task UpdateAsync(Guid id, Reserva reserva);
+            Task DeleteAsync(Guid id);
             IEnumerable<ReservasDTO> GetReservaDto();
         }
 }

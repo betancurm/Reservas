@@ -13,11 +13,11 @@ namespace apiReservas.Models
         public int NumeroBanos { get; set; }
         public bool Parqueadero { get; set; }
         [JsonIgnore]
-        public virtual ICollection<Ingreso> Ingresos { get; set; }
+        public virtual ICollection<Ingreso>? Ingresos { get; set; }
         [JsonIgnore]
-        public virtual ICollection<Egreso> Egresos { get; set; }
+        public virtual ICollection<Egreso>? Egresos { get; set; }
         [JsonIgnore]
-        public virtual ICollection<Reserva> Reservas { get; set; }
+        public virtual ICollection<Reserva>? Reservas { get; set; }
         public DateTime FechaCreacion { get; set; }
         public DateTime FechaModificacion { get; set; }
         public Guid ApplicationUserId { get; set; }

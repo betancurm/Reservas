@@ -2,11 +2,14 @@
 using apiReservas.DTOs.Reservas;
 using apiReservas.Models;
 using apiReservas.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace apiReservas.Controllers
 {
+    [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class ReservaController : ControllerBase
     {
         IReservaService _reservaService;
@@ -29,19 +32,19 @@ namespace apiReservas.Controllers
         [HttpPost]
         public IActionResult Post([FromBody] Reserva reserva)
         {
-            _reservaService.Save(reserva);
+            _reservaService.SaveAsync(reserva);
             return Ok();
         }
-        [HttpPut("{id}")]
+        [HttpPut("{id:guid}")]
         public  IActionResult Put(Guid id, [FromBody] Reserva reserva)
         {
-            _reservaService.Update(id, reserva);
+            _reservaService.UpdateAsync(id, reserva);
             return Ok();
         }
-        [HttpDelete("{id}")]
+        [HttpDelete("{id:guid}")]
         public IActionResult Delete(Guid id)
         {
-            _reservaService.Delete(id);
+            _reservaService.DeleteAsync(id);
             return Ok();
         }
 

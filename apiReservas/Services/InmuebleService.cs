@@ -18,8 +18,9 @@ namespace apiReservas.Services
         {
             return _context.Inmuebles;
         }
-        public async Task Save(Inmueble inmueble)
+        public async Task SaveAsync(Inmueble inmueble)
         {
+            inmueble.ApplicationUserId = _currentUserService.ApplicationUserId;
             inmueble.InmuebleId = Guid.NewGuid();
             inmueble.FechaCreacion = DateTime.Now;
             inmueble.FechaModificacion = DateTime.Now;
@@ -27,12 +28,13 @@ namespace apiReservas.Services
 
             await _context.SaveChangesAsync();
         }
-        public async Task Update(Guid id, Inmueble inmueble)
+        public async Task UpdateAsync(Guid id, Inmueble inmueble)
         {
             var inmuebleActual = _context.Inmuebles.Find(id);
 
             if (inmuebleActual != null)
             {
+                inmueble.ApplicationUserId = _currentUserService.ApplicationUserId;
                 inmuebleActual.Direccion = inmueble.Direccion;
                 inmuebleActual.Ciudad = inmueble.Ciudad;
                 inmuebleActual.NumeroHabitaciones = inmueble.NumeroHabitaciones;
@@ -44,7 +46,7 @@ namespace apiReservas.Services
                 await _context.SaveChangesAsync();
             }
         }
-        public async Task Delete(Guid id)
+        public async Task DeleteAsync(Guid id)
         {
             var inmuebleActual = _context.Inmuebles.Find(id);
             if (inmuebleActual != null)
@@ -58,8 +60,8 @@ namespace apiReservas.Services
     public interface IInmuebleService
     {
         public IEnumerable<Inmueble> Get();
-        public Task Save(Inmueble inmueble);
-        public Task Update(Guid id, Inmueble inmueble);
-        public Task Delete(Guid id);
+        public Task SaveAsync(Inmueble inmueble);
+        public Task UpdateAsync(Guid id, Inmueble inmueble);
+        public Task DeleteAsync(Guid id);
     }
 }

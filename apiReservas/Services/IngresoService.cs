@@ -5,18 +5,27 @@ namespace apiReservas.Services
 {
     public class IngresoService : IIngresoService
     {
+        private readonly ICurrentUserService _currentUserService;
+
         private readonly ReservasContext _context;
-        public IngresoService(ReservasContext dbcontext)
+
+        public IngresoService(ReservasContext dbcontext, ICurrentUserService currentUserService)
         {
             _context = dbcontext;
+            _currentUserService = currentUserService;
         }
         public IEnumerable<Ingreso> Get()
         {
             return _context.Ingresos;
         }
 
-        public async Task Save(Ingreso ingreso)
+        public async Task SaveAsync(Ingreso ingreso)
         {
+            // 1. Usuario autenticado
+            if (_currentUserService.ApplicationUserId == Guid.Empty)
+                throw new UnauthorizedAccessException("Token sin uid");
+            ingreso.ApplicationUserId  = _currentUserService.ApplicationUserId;
+            
             ingreso.IngresoId = Guid.NewGuid();
             ingreso.FechaCreacion = DateTime.Now;
             ingreso.FechaModificacion = DateTime.Now;
@@ -28,10 +37,14 @@ namespace apiReservas.Services
  
         public async Task Update(Guid id, Ingreso ingreso)
         {
+            // 1. Usuario autenticado
+            if (_currentUserService.ApplicationUserId == Guid.Empty)
+                throw new UnauthorizedAccessException("Token sin uid");
             var ingresoActual = _context.Ingresos.Find(id);
 
             if (ingresoActual != null)
-            { 
+            {   
+                ingresoActual.ApplicationUserId = _currentUserService.ApplicationUserId;
                 ingresoActual.Descripcion = ingreso.Descripcion;
                 ingresoActual.FechaIngreso = ingreso.FechaIngreso;
                 ingresoActual.TipoPlataforma = ingreso.TipoPlataforma;
@@ -59,7 +72,7 @@ namespace apiReservas.Services
     public interface IIngresoService
     {
         IEnumerable<Ingreso> Get();
-        Task Save(Ingreso ingreso);
+        Task SaveAsync(Ingreso ingreso);
         Task Update(Guid id, Ingreso ingreso);
         Task Delete(Guid id);
 
