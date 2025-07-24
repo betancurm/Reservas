@@ -1,0 +1,28 @@
+version: '3.8'
+
+services:
+  db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: sqlserver-db
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=Switchfoot941020*       # cámbiala por una contraseña fuerte
+    ports:
+      - "1433:1433"
+    volumes:
+      - sqlserverdata:/var/opt/mssql
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      - db
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__cnReservas=Server=db,1433;Database=ReservasDb;User Id=sa;Password=Switchfoot941020*;TrustServerCertificate=True
+    ports:
+      - "5000:8080"
+
+volumes:
+  sqlserverdata:

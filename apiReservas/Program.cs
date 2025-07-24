@@ -123,6 +123,8 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     var context = scope.ServiceProvider.GetRequiredService<ReservasContext>();
+    context.Database.Migrate();
+    
     await IdentityDataSeeder.SeedAsync(scope.ServiceProvider);
 
     var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
@@ -142,12 +144,13 @@ using (var scope = app.Services.CreateScope())
 #endregion
 
 #region 9. Middleware HTTP
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
-
+//if (app.Environment.IsDevelopment())
+//{
+//    app.UseSwagger();
+//    app.UseSwaggerUI();
+//}
+app.UseSwagger();
+app.UseSwaggerUI();
 app.UseHttpsRedirection();
 app.UseAuthentication();    //  ← antes de Authorization
 app.UseAuthorization();
