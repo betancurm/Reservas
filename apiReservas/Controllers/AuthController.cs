@@ -24,23 +24,23 @@ public class AuthController : ControllerBase
         _roleMgr = roleManager;
     }
 
-    [HttpPost("register")]
-    [AllowAnonymous]
-    public async Task<IActionResult> Register([FromBody] RegisterUserDto dto)
-    {
-        // 1. Crear el usuario
-        var user = new ApplicationUser
-        {
-            UserName = dto.UserName,
-            Email = dto.Email
-        };
-
-        var result = await _userMgr.CreateAsync(user, dto.Password);
-        if (!result.Succeeded)
-            return BadRequest(result.Errors);
-
-        return StatusCode(201, new { user.Id, user.UserName, user.Email });
-    }
+   // [HttpPost("register")]
+   // [AllowAnonymous]
+   // public async Task<IActionResult> Register([FromBody] RegisterUserDto dto)
+   // {
+   //     // 1. Crear el usuario
+   //     var user = new ApplicationUser
+   //     {
+   //         UserName = dto.UserName,
+   //         Email = dto.Email
+   //     };
+//
+   //     var result = await _userMgr.CreateAsync(user, dto.Password);
+   //     if (!result.Succeeded)
+   //         return BadRequest(result.Errors);
+//
+   //     return StatusCode(201, new { user.Id, user.UserName, user.Email });
+   // }
 
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] LoginDto dto)
